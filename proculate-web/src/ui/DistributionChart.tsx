@@ -10,7 +10,6 @@ type Props = {
   markers?: ReadonlyArray<Marker>;
   width: number;
   height: number;
-  bins?: number;
   className?: string;
 };
 
@@ -32,10 +31,7 @@ type Histogram = {
   readonly yMax: number;
 };
 
-const histogram = (
-  samples: ReadonlyArray<number>,
-  bins: number,
-): Histogram | null => {
+const histogram = (samples: ReadonlyArray<number>): Histogram | null => {
   if (samples.length === 0) return null;
   let lo = Infinity;
   let hi = -Infinity;
@@ -48,6 +44,7 @@ const histogram = (
     lo -= 0.5;
     hi += 0.5;
   }
+  const bins = Math.ceil(Math.log2(samples.length) + 1);
   const w = (hi - lo) / bins;
   const counts = new Array<number>(bins).fill(0);
   for (const s of samples) {
@@ -93,10 +90,9 @@ export const DistributionChart = ({
   markers = [],
   width,
   height,
-  bins = 24,
   className,
 }: Props) => {
-  const hist = useMemo(() => histogram(samples, bins), [samples, bins]);
+  const hist = useMemo(() => histogram(samples), [samples]);
 
   const layout = useMemo(() => {
     if (!hist) return null;
@@ -105,11 +101,13 @@ export const DistributionChart = ({
     const sx = innerW / (hist.xMax - hist.xMin);
     const sy = innerH / Math.max(1, hist.yMax);
     const pts: Array<readonly [number, number]> = [];
+    pts.push([PAD_X, PAD_Y + innerH]);
     for (let i = 0; i < hist.xs.length; i += 1) {
       const x = PAD_X + (hist.xs[i]! - hist.xMin) * sx;
       const y = PAD_Y + innerH - hist.ys[i]! * sy;
       pts.push([x, y]);
     }
+    pts.push([PAD_X + innerW, PAD_Y + innerH]);
     const baselineY = PAD_Y + innerH;
     const curve = cubicSmooth(pts);
     return {
