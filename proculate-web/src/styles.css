@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --color-paper: #f4f1ea;
+  --color-ink: #111111;
+  --color-rule: #111111;
+  --color-accent: #f25c05;
+  --color-warn: #c8102e;
+  --color-muted: #6b6b6b;
+  --color-soft: #e7e2d6;
+  --shadow-brut: 6px 6px 0 0 #111111;
+  --shadow-brut-sm: 4px 4px 0 0 #111111;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}

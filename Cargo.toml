@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+    "proculate-core",
+    "proculate-wasm",
+]
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+rust-version = "1.78"
+
+[workspace.dependencies]
+proculate-core = { path = "proculate-core" }
+rand = { version = "0.8", default-features = false, features = ["std", "std_rng"] }
+rand_distr = { version = "0.4", default-features = false, features = ["std"] }
+rand_pcg = "0.3"

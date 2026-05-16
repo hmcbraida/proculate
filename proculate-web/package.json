@@ -1,0 +1,37 @@
+{
+  "name": "proculate-web",
+  "module": "src/main.tsx",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot ./server.ts",
+    "build:wasm": "cd ../proculate-wasm && wasm-pack build --target web --out-dir pkg",
+    "build": "bun build ./src/main.tsx --outdir ./dist --target browser",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && biome check src",
+    "lint:fix": "eslint . --fix && biome check src --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.15",
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/bun": "latest",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "bun-plugin-tailwind": "^0.1.2",
+    "eslint": "^10.4.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "tailwindcss": "^4.3.0",
+    "typescript-eslint": "^8.59.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.3",
+    "proculate-wasm": "file:../proculate-wasm/pkg",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  }
+}
