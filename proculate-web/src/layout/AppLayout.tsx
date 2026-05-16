@@ -11,7 +11,10 @@ const navLink =
 export const AppLayout = ({ children }: Props) => (
   <div className="flex min-h-screen flex-col bg-paper text-ink">
     <header className="flex items-center justify-between border-b-2 border-ink bg-ink px-4 py-2 text-paper">
-      <Link to="/1d-sde-solve" className="text-lg font-extrabold uppercase tracking-[0.2em]">
+      <Link
+        to="/1d-sde-solve"
+        className="text-lg font-extrabold uppercase tracking-[0.2em]"
+      >
         proculate
       </Link>
       <nav className="flex">

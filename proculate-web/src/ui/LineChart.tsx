@@ -94,7 +94,13 @@ export const LineChart = ({ series, width, height, className }: Props) => {
           >
             {formatTick(bounds.yMax)}
           </text>
-          <text x={4} y={height - PAD_Y - 4} fontSize={10} fontWeight={600} fill="currentColor">
+          <text
+            x={4}
+            y={height - PAD_Y - 4}
+            fontSize={10}
+            fontWeight={600}
+            fill="currentColor"
+          >
             {formatTick(bounds.yMin)}
           </text>
           {paths.map((d, i) => (
@@ -104,7 +110,10 @@ export const LineChart = ({ series, width, height, className }: Props) => {
               fill="none"
               stroke="currentColor"
               strokeWidth={1}
-              strokeOpacity={Math.max(0.06, Math.min(0.5, 8 / Math.max(8, paths.length)))}
+              strokeOpacity={Math.max(
+                0.06,
+                Math.min(0.5, 8 / Math.max(8, paths.length)),
+              )}
             />
           ))}
         </>

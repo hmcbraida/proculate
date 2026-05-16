@@ -19,7 +19,11 @@ export const StderrBox = ({ error, notes }: Props) => {
       aria-live="polite"
     >
       <span className="font-mono">
-        {error ? `error: ${error}` : notes.length > 0 ? notes.join("  •  ") : "—"}
+        {error
+          ? `error: ${error}`
+          : notes.length > 0
+            ? notes.join("  •  ")
+            : "—"}
       </span>
     </div>
   );

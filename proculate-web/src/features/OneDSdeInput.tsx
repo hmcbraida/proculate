@@ -58,7 +58,9 @@ export const OneDSdeInput = ({ value, onChange, onSubmit, busy }: Props) => (
           type="number"
           step="any"
           value={value.s0}
-          onChange={(e) => onChange({ ...value, s0: parseNum(e.target.value, value.s0) })}
+          onChange={(e) =>
+            onChange({ ...value, s0: parseNum(e.target.value, value.s0) })
+          }
         />
       </Field>
       <Field label="t₀" htmlFor="t0">
@@ -67,7 +69,9 @@ export const OneDSdeInput = ({ value, onChange, onSubmit, busy }: Props) => (
           type="number"
           step="any"
           value={value.t0}
-          onChange={(e) => onChange({ ...value, t0: parseNum(e.target.value, value.t0) })}
+          onChange={(e) =>
+            onChange({ ...value, t0: parseNum(e.target.value, value.t0) })
+          }
         />
       </Field>
       <Field label="t_end" htmlFor="tEnd">
@@ -76,7 +80,9 @@ export const OneDSdeInput = ({ value, onChange, onSubmit, busy }: Props) => (
           type="number"
           step="any"
           value={value.tEnd}
-          onChange={(e) => onChange({ ...value, tEnd: parseNum(e.target.value, value.tEnd) })}
+          onChange={(e) =>
+            onChange({ ...value, tEnd: parseNum(e.target.value, value.tEnd) })
+          }
         />
       </Field>
       <Field label="dt" htmlFor="dt">
@@ -85,7 +91,9 @@ export const OneDSdeInput = ({ value, onChange, onSubmit, busy }: Props) => (
           type="number"
           step="any"
           value={value.dt}
-          onChange={(e) => onChange({ ...value, dt: parseNum(e.target.value, value.dt) })}
+          onChange={(e) =>
+            onChange({ ...value, dt: parseNum(e.target.value, value.dt) })
+          }
         />
       </Field>
       <Field label="paths" htmlFor="paths">
@@ -98,7 +106,10 @@ export const OneDSdeInput = ({ value, onChange, onSubmit, busy }: Props) => (
           onChange={(e) =>
             onChange({
               ...value,
-              paths: Math.max(1, Math.round(parseNum(e.target.value, value.paths))),
+              paths: Math.max(
+                1,
+                Math.round(parseNum(e.target.value, value.paths)),
+              ),
             })
           }
         />

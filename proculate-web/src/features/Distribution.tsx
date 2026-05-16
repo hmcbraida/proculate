@@ -16,7 +16,12 @@ export const Distribution = ({ samples, stats }: Props) => {
       : [];
   return (
     <div className="relative w-full h-72 text-ink">
-      <DistributionChart samples={samples} markers={markers} width={800} height={300} />
+      <DistributionChart
+        samples={samples}
+        markers={markers}
+        width={800}
+        height={300}
+      />
     </div>
   );
 };

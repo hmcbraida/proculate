@@ -5,7 +5,9 @@ export type SampleStatistics = {
   readonly stddev: number;
 };
 
-export const computeStatistics = (samples: ReadonlyArray<number>): SampleStatistics => {
+export const computeStatistics = (
+  samples: ReadonlyArray<number>,
+): SampleStatistics => {
   const n = samples.length;
   if (n === 0) return { count: 0, mean: NaN, median: NaN, stddev: NaN };
   let sum = 0;
@@ -25,7 +27,9 @@ export const computeStatistics = (samples: ReadonlyArray<number>): SampleStatist
   return { count: n, mean, median, stddev };
 };
 
-export const terminalValues = <T extends { readonly values: ReadonlyArray<number> }>(
+export const terminalValues = <
+  T extends { readonly values: ReadonlyArray<number> },
+>(
   paths: ReadonlyArray<T>,
 ): ReadonlyArray<number> => {
   const out: number[] = [];

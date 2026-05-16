@@ -20,7 +20,12 @@ const variants: Record<Variant, string> = {
   ghost: "bg-paper text-ink hover:bg-ink hover:text-paper",
 };
 
-export const Button = ({ variant = "primary", className, type, ...rest }: Props) => (
+export const Button = ({
+  variant = "primary",
+  className,
+  type,
+  ...rest
+}: Props) => (
   <button
     type={type ?? "button"}
     className={`${base} ${variants[variant]} ${className ?? ""}`}

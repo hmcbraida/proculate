@@ -15,8 +15,12 @@ export const StatisticsTable = ({ stats }: Props) => (
   <table className="w-full border-collapse text-sm">
     <thead>
       <tr className="bg-ink text-paper">
-        <th className="px-3 py-1 text-left font-bold uppercase tracking-widest">stat</th>
-        <th className="px-3 py-1 text-right font-bold uppercase tracking-widest">value</th>
+        <th className="px-3 py-1 text-left font-bold uppercase tracking-widest">
+          stat
+        </th>
+        <th className="px-3 py-1 text-right font-bold uppercase tracking-widest">
+          value
+        </th>
       </tr>
     </thead>
     <tbody className="font-mono">

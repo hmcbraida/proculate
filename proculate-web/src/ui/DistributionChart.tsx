@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 
 type Marker = {
   readonly label: string;
@@ -92,6 +92,8 @@ export const DistributionChart = ({
   height,
   className,
 }: Props) => {
+  const rawId = useId();
+  const clipId = `dist-clip${rawId.replace(/:/g, "-")}`;
   const hist = useMemo(() => histogram(samples), [samples]);
 
   const layout = useMemo(() => {
@@ -153,11 +155,22 @@ export const DistributionChart = ({
     >
       {layout ? (
         <>
+          <defs>
+            <clipPath id={clipId}>
+              <rect
+                x={PAD_X}
+                y={PAD_Y}
+                width={layout.innerW}
+                height={layout.innerH}
+              />
+            </clipPath>
+          </defs>
           <path
             d={layout.curve}
             fill="none"
             stroke="currentColor"
             strokeWidth={1.5}
+            clipPath={`url(#${clipId})`}
           />
           {markerLines.map((m, i) => (
             <g key={i}>
