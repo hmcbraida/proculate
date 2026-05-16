@@ -16,7 +16,7 @@ const initialInput: OneDInputState = {
   t0: 0,
   tEnd: 1,
   dt: 0.01,
-  paths: 32,
+  paths: 64,
 };
 
 type RunState = {
