@@ -44,19 +44,21 @@ pub fn solve_sde_milstein(
     dt: f64,
 ) -> Result<WebResult, JsError> {
     let mu_expr: Expr = mu_expr
+        .to_lowercase()
         .parse()
         .map_err(|e: meval::Error| JsError::new(&format!("mu parse error: {e}")))?;
     let sigma_expr: Expr = sigma_expr
+        .to_lowercase()
         .parse()
         .map_err(|e: meval::Error| JsError::new(&format!("sigma parse error: {e}")))?;
 
     let mu = mu_expr
         .clone()
-        .bind2("S", "t")
+        .bind2("s", "t")
         .map_err(|e| JsError::new(&format!("mu bind error: {e}")))?;
     let sigma = sigma_expr
         .clone()
-        .bind2("S", "t")
+        .bind2("s", "t")
         .map_err(|e| JsError::new(&format!("sigma bind error: {e}")))?;
 
     let mut rng = rand::thread_rng();
