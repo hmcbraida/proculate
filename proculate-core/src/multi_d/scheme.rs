@@ -14,7 +14,7 @@
 //! source produces only the physical driving process, and scheme-specific
 //! scratch randomness stays inside the scheme.
 
-use rand::{Rng, SeedableRng};
+use rand::SeedableRng;
 use rand_distr::{Distribution, Normal};
 use rand_pcg::Pcg64;
 
@@ -185,9 +185,7 @@ fn sra_step(
             let mut acc = s[i];
             for j in 0..l {
                 acc += tab.a0[l][j] * a_stage[j][i] * dt
-                    + tab.b0[l][j]
-                        * (equations[i].sigma)(s, t + tab.c1[j] * dt)
-                        * (i10 / dt);
+                    + tab.b0[l][j] * (equations[i].sigma)(s, t + tab.c1[j] * dt) * (i10 / dt);
             }
             h0[l][i] = acc;
         }
@@ -252,10 +250,9 @@ fn sri_step(
             let mut h0_li = s[i];
             let mut h1_li = s[i];
             for j in 0..l {
-                h0_li += tab.a0[l][j] * a_stage[j][i] * dt
-                    + tab.b0[l][j] * b_stage[j][i] * (i10 / dt);
-                h1_li += tab.a1[l][j] * a_stage[j][i] * dt
-                    + tab.b1[l][j] * b_stage[j][i] * sqrt_h;
+                h0_li +=
+                    tab.a0[l][j] * a_stage[j][i] * dt + tab.b0[l][j] * b_stage[j][i] * (i10 / dt);
+                h1_li += tab.a1[l][j] * a_stage[j][i] * dt + tab.b1[l][j] * b_stage[j][i] * sqrt_h;
             }
             h0[l][i] = h0_li;
             h1[l][i] = h1_li;
@@ -317,7 +314,9 @@ macro_rules! define_sra {
         }
         impl $name {
             pub fn new(seed: u64) -> Self {
-                Self { aux: AuxRng::new(seed) }
+                Self {
+                    aux: AuxRng::new(seed),
+                }
             }
         }
         impl Default for $name {
@@ -350,7 +349,9 @@ macro_rules! define_sri {
         }
         impl $name {
             pub fn new(seed: u64) -> Self {
-                Self { aux: AuxRng::new(seed) }
+                Self {
+                    aux: AuxRng::new(seed),
+                }
             }
         }
         impl Default for $name {

@@ -245,8 +245,16 @@ fn euler_mean_matches_decoupled_gbm() {
     let mut sum = [0.0; 2];
     for seed in 0..n_paths {
         let eqs = vec![
-            Equation::new(move |s: &[f64], _| mu * s[0], move |s: &[f64], _| sigma * s[0], 0),
-            Equation::new(move |s: &[f64], _| mu * s[1], move |s: &[f64], _| sigma * s[1], 1),
+            Equation::new(
+                move |s: &[f64], _| mu * s[0],
+                move |s: &[f64], _| sigma * s[0],
+                0,
+            ),
+            Equation::new(
+                move |s: &[f64], _| mu * s[1],
+                move |s: &[f64], _| sigma * s[1],
+                1,
+            ),
         ];
         let p = MultiSolverParams {
             s0: vec![s0, s0],
@@ -282,8 +290,16 @@ fn milstein_tracks_coupled_gbm_better_than_euler() {
     let seed = 19;
 
     let eqs = vec![
-        Equation::new(move |s: &[f64], _| mu * s[0], move |s: &[f64], _| sigma[0] * s[0], 0),
-        Equation::new(move |s: &[f64], _| mu * s[1], move |s: &[f64], _| sigma[1] * s[1], 0),
+        Equation::new(
+            move |s: &[f64], _| mu * s[0],
+            move |s: &[f64], _| sigma[0] * s[0],
+            0,
+        ),
+        Equation::new(
+            move |s: &[f64], _| mu * s[1],
+            move |s: &[f64], _| sigma[1] * s[1],
+            0,
+        ),
     ];
     let p = MultiSolverParams {
         s0: vec![s0, s0],
@@ -332,8 +348,16 @@ fn sra1_solves_additive_noise_ornstein_uhlenbeck() {
     let mut sum_sq = [0.0; 2];
     for seed in 0..n_paths {
         let eqs = vec![
-            Equation::new(move |s: &[f64], _| -theta * s[0], move |_: &[f64], _| sigma, 0),
-            Equation::new(move |s: &[f64], _| -theta * s[1], move |_: &[f64], _| sigma, 1),
+            Equation::new(
+                move |s: &[f64], _| -theta * s[0],
+                move |_: &[f64], _| sigma,
+                0,
+            ),
+            Equation::new(
+                move |s: &[f64], _| -theta * s[1],
+                move |_: &[f64], _| sigma,
+                1,
+            ),
         ];
         let p = MultiSolverParams {
             s0: vec![0.0, 0.0],
@@ -356,7 +380,11 @@ fn sra1_solves_additive_noise_ornstein_uhlenbeck() {
         sum_sq[0] / n_paths as f64 - mean[0] * mean[0],
         sum_sq[1] / n_paths as f64 - mean[1] * mean[1],
     ];
-    assert!(mean[0].abs() < 0.05 && mean[1].abs() < 0.05, "means {:?}", mean);
+    assert!(
+        mean[0].abs() < 0.05 && mean[1].abs() < 0.05,
+        "means {:?}",
+        mean
+    );
     assert!(
         (var_emp[0] - var_analytic).abs() < 0.02 && (var_emp[1] - var_analytic).abs() < 0.02,
         "variances {:?}, analytic {}",
@@ -382,13 +410,19 @@ fn all_schemes_step_without_blowup() {
         seed: 23,
     };
     let runs: Vec<(&str, _)> = vec![
-        ("euler", solve(&mut EulerMaruyama, &build(), p.clone()).values),
+        (
+            "euler",
+            solve(&mut EulerMaruyama, &build(), p.clone()).values,
+        ),
         ("milstein", solve(&mut Milstein, &build(), p.clone()).values),
         ("sra1", solve(&mut Sra1::new(0), &build(), p.clone()).values),
         ("sra2", solve(&mut Sra2::new(0), &build(), p.clone()).values),
         ("sri1", solve(&mut Sri1::new(0), &build(), p.clone()).values),
         ("sri2", solve(&mut Sri2::new(0), &build(), p.clone()).values),
-        ("sriw1", solve(&mut Sriw1::new(0), &build(), p.clone()).values),
+        (
+            "sriw1",
+            solve(&mut Sriw1::new(0), &build(), p.clone()).values,
+        ),
     ];
     for (name, values) in runs {
         assert_eq!(values.len(), 51, "{name} step count");

@@ -1,8 +1,6 @@
 //! Integration tests for the 1D SDE solvers.
 
-use proculate_core::one_d::{
-    solve, solve_milstein, EulerMaruyama, Milstein, SolverParams,
-};
+use proculate_core::one_d::{solve, solve_milstein, EulerMaruyama, Milstein, SolverParams};
 
 fn params(seed: u64) -> SolverParams {
     SolverParams {
@@ -24,7 +22,10 @@ fn output_length_matches_step_count() {
 
 #[test]
 fn step_count_handles_degenerate_interval() {
-    let p = SolverParams { t_end: 0.0, ..params(0) };
+    let p = SolverParams {
+        t_end: 0.0,
+        ..params(0)
+    };
     assert_eq!(p.step_count(), 0);
     let result = solve_milstein(|_, _| 1.0, |_, _| 1.0, p);
     assert_eq!(result.values, vec![1.0]);
@@ -35,7 +36,11 @@ fn zero_noise_recovers_deterministic_ode() {
     // dS = mu*S dt -> S(T) = S0 * exp(mu*T).
     let mu_k = 0.1;
     let t_end = 1.0;
-    let fine = SolverParams { dt: 1e-4, t_end, ..params(1) };
+    let fine = SolverParams {
+        dt: 1e-4,
+        t_end,
+        ..params(1)
+    };
     let result = solve_milstein(move |s, _| mu_k * s, |_, _| 0.0, fine);
     let analytic = (mu_k * t_end).exp();
     let last = *result.values.last().unwrap();
@@ -63,7 +68,11 @@ fn different_seeds_produce_different_paths() {
 fn euler_maruyama_also_solves_zero_noise() {
     let mu_k = 0.1;
     let t_end = 1.0;
-    let fine = SolverParams { dt: 1e-4, t_end, ..params(3) };
+    let fine = SolverParams {
+        dt: 1e-4,
+        t_end,
+        ..params(3)
+    };
     let result = solve(&EulerMaruyama, move |s, _| mu_k * s, |_, _| 0.0, fine);
     let analytic = (mu_k * t_end).exp();
     let last = *result.values.last().unwrap();
@@ -82,7 +91,13 @@ fn gbm_mean_matches_analytic() {
 
     let mut sum = 0.0;
     for seed in 0..n_paths {
-        let p = SolverParams { s0, t0: 0.0, t_end, dt: 0.005, seed };
+        let p = SolverParams {
+            s0,
+            t0: 0.0,
+            t_end,
+            dt: 0.005,
+            seed,
+        };
         let r = solve_milstein(move |s, _| mu * s, move |s, _| sigma * s, p);
         sum += *r.values.last().unwrap();
     }
@@ -101,7 +116,7 @@ fn milstein_matches_gbm_more_accurately_than_euler() {
     // Strong-order comparison: under refined dt, Milstein should track the
     // analytic GBM closer than Euler for the same path.
     use proculate_core::noise::{Brownian, Noise};
-    use proculate_core::one_d::{solve_with_noise};
+    use proculate_core::one_d::solve_with_noise;
     use rand::SeedableRng;
     use rand_pcg::Pcg64;
 
@@ -112,13 +127,22 @@ fn milstein_matches_gbm_more_accurately_than_euler() {
 
     let drift = |s: f64, _t: f64| mu * s;
     let diff = |s: f64, _t: f64| sigma * s;
-    let p = SolverParams { s0, t0: 0.0, t_end, dt: 0.01, seed: 11 };
+    let p = SolverParams {
+        s0,
+        t0: 0.0,
+        t_end,
+        dt: 0.01,
+        seed: 11,
+    };
 
     // Sample one shared path of increments; reuse for both schemes.
     let mut brownian = Brownian::new(Pcg64::seed_from_u64(p.seed));
     let increments: Vec<f64> = (0..p.step_count()).map(|_| brownian.sample(p.dt)).collect();
 
-    struct Replay { incs: Vec<f64>, idx: usize }
+    struct Replay {
+        incs: Vec<f64>,
+        idx: usize,
+    }
     impl Noise for Replay {
         type Increment = f64;
         fn sample(&mut self, _dt: f64) -> f64 {
@@ -128,8 +152,14 @@ fn milstein_matches_gbm_more_accurately_than_euler() {
         }
     }
 
-    let mut n1 = Replay { incs: increments.clone(), idx: 0 };
-    let mut n2 = Replay { incs: increments.clone(), idx: 0 };
+    let mut n1 = Replay {
+        incs: increments.clone(),
+        idx: 0,
+    };
+    let mut n2 = Replay {
+        incs: increments.clone(),
+        idx: 0,
+    };
 
     let r_milstein = solve_with_noise(&Milstein, &drift, &diff, p, &mut n1);
     let r_euler = solve_with_noise(&EulerMaruyama, &drift, &diff, p, &mut n2);
