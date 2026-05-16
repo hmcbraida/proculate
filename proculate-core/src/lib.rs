@@ -5,6 +5,7 @@
 //! When nD systems or non-Brownian processes (e.g. compound Poisson) are
 //! added, they should slot in alongside without disturbing this layout.
 
+pub mod multi_d;
 pub mod noise;
 pub mod numeric;
 pub mod one_d;

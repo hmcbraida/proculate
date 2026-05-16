@@ -35,3 +35,36 @@ impl<R: Rng> Noise for Brownian<R> {
         self.standard.sample(&mut self.rng) * dt.sqrt()
     }
 }
+
+/// Vector Brownian noise: `dim` independent scalar Brownian increments per
+/// call, each `~ N(0, dt)`.
+pub struct MultiBrownian<R: Rng> {
+    rng: R,
+    standard: Normal<f64>,
+    dim: usize,
+}
+
+impl<R: Rng> MultiBrownian<R> {
+    pub fn new(rng: R, dim: usize) -> Self {
+        Self {
+            rng,
+            standard: Normal::new(0.0, 1.0).expect("valid normal parameters"),
+            dim,
+        }
+    }
+
+    pub fn dim(&self) -> usize {
+        self.dim
+    }
+}
+
+impl<R: Rng> Noise for MultiBrownian<R> {
+    type Increment = Vec<f64>;
+
+    fn sample(&mut self, dt: f64) -> Vec<f64> {
+        let sd = dt.sqrt();
+        (0..self.dim)
+            .map(|_| self.standard.sample(&mut self.rng) * sd)
+            .collect()
+    }
+}
