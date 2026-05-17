@@ -1,4 +1,4 @@
-> **Warning: Not production ready. Interfaces are unstable and subject to breaking changes without notice.**
+> **Warning: This is an educational toy. Do not let it touch anything important.**
 
 # proculate
 
