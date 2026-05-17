@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 
 import { AppLayout } from "@/layout/AppLayout";
+import { MultiDSdeSolvePage } from "@/pages/MultiDSdeSolvePage";
 import { OneDSdeSolvePage } from "@/pages/OneDSdeSolvePage";
 
 const rootRoute = createRootRoute({
@@ -29,7 +30,17 @@ const oneDSdeRoute = createRoute({
   component: OneDSdeSolvePage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, oneDSdeRoute]);
+const multiDSdeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/multi-d-sde-solve",
+  component: MultiDSdeSolvePage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  oneDSdeRoute,
+  multiDSdeRoute,
+]);
 
 export const router = createRouter({ routeTree });
 

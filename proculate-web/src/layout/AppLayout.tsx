@@ -25,6 +25,13 @@ export const AppLayout = ({ children }: Props) => (
         >
           1d sde
         </Link>
+        <Link
+          to="/multi-d-sde-solve"
+          className={navLink}
+          activeProps={{ className: `${navLink} bg-paper text-ink` }}
+        >
+          multi-d sde
+        </Link>
       </nav>
     </header>
     <main className="mx-auto w-3/4 flex-1 py-4">{children}</main>

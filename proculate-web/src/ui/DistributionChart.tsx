@@ -1,12 +1,21 @@
 import { useId, useMemo } from "react";
 
+import type { LegendEntry } from "@/ui/LineChart";
+
 type Marker = {
   readonly label: string;
   readonly value: number;
 };
 
+export type SampleGroup = {
+  readonly color: string;
+  readonly samples: ReadonlyArray<number>;
+};
+
 type Props = {
-  samples: ReadonlyArray<number>;
+  samples?: ReadonlyArray<number>;
+  groups?: ReadonlyArray<SampleGroup>;
+  legend?: ReadonlyArray<LegendEntry>;
   markers?: ReadonlyArray<Marker>;
   width: number;
   height: number;
@@ -23,44 +32,50 @@ const formatTick = (n: number): string => {
   return n.toPrecision(4).replace(/\.?0+$/, "");
 };
 
-type Histogram = {
+type MultiHistogram = {
   readonly xs: ReadonlyArray<number>;
-  readonly ys: ReadonlyArray<number>;
+  readonly counts: ReadonlyArray<ReadonlyArray<number>>;
   readonly xMin: number;
   readonly xMax: number;
   readonly yMax: number;
 };
 
-const histogram = (samples: ReadonlyArray<number>): Histogram | null => {
-  if (samples.length === 0) return null;
+const histogram = (
+  groups: ReadonlyArray<SampleGroup>,
+): MultiHistogram | null => {
   let lo = Infinity;
   let hi = -Infinity;
-  for (const s of samples) {
-    if (s < lo) lo = s;
-    if (s > hi) hi = s;
+  let total = 0;
+  for (const g of groups) {
+    for (const s of g.samples) {
+      if (s < lo) lo = s;
+      if (s > hi) hi = s;
+      total += 1;
+    }
   }
-  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return null;
+  if (total === 0 || !Number.isFinite(lo) || !Number.isFinite(hi)) return null;
   if (lo === hi) {
     lo -= 0.5;
     hi += 0.5;
   }
-  const bins = Math.ceil(Math.log2(samples.length) + 1);
+  const bins = Math.ceil(Math.log2(total) + 1);
   const w = (hi - lo) / bins;
-  const counts = new Array<number>(bins).fill(0);
-  for (const s of samples) {
-    let idx = Math.floor((s - lo) / w);
-    if (idx < 0) idx = 0;
-    if (idx >= bins) idx = bins - 1;
-    counts[idx] = (counts[idx] ?? 0) + 1;
+  const counts: number[][] = [];
+  let yMax = 0;
+  for (const g of groups) {
+    const c = new Array<number>(bins).fill(0);
+    for (const s of g.samples) {
+      let idx = Math.floor((s - lo) / w);
+      if (idx < 0) idx = 0;
+      if (idx >= bins) idx = bins - 1;
+      c[idx] = (c[idx] ?? 0) + 1;
+    }
+    for (const v of c) if (v > yMax) yMax = v;
+    counts.push(c);
   }
   const xs = new Array<number>(bins);
-  let yMax = 0;
-  for (let i = 0; i < bins; i += 1) {
-    xs[i] = lo + (i + 0.5) * w;
-    const c = counts[i] ?? 0;
-    if (c > yMax) yMax = c;
-  }
-  return { xs, ys: counts, xMin: lo, xMax: hi, yMax };
+  for (let i = 0; i < bins; i += 1) xs[i] = lo + (i + 0.5) * w;
+  return { xs, counts, xMin: lo, xMax: hi, yMax };
 };
 
 const cubicSmooth = (pts: ReadonlyArray<readonly [number, number]>): string => {
@@ -87,6 +102,8 @@ const cubicSmooth = (pts: ReadonlyArray<readonly [number, number]>): string => {
 
 export const DistributionChart = ({
   samples,
+  groups,
+  legend,
   markers = [],
   width,
   height,
@@ -94,7 +111,12 @@ export const DistributionChart = ({
 }: Props) => {
   const rawId = useId();
   const clipId = `dist-clip${rawId.replace(/:/g, "-")}`;
-  const hist = useMemo(() => histogram(samples), [samples]);
+
+  const resolved = useMemo<ReadonlyArray<SampleGroup>>(
+    () => groups ?? [{ color: "currentColor", samples: samples ?? [] }],
+    [groups, samples],
+  );
+  const hist = useMemo(() => histogram(resolved), [resolved]);
 
   const layout = useMemo(() => {
     if (!hist) return null;
@@ -102,28 +124,31 @@ export const DistributionChart = ({
     const innerH = height - PAD_Y * 2;
     const sx = innerW / (hist.xMax - hist.xMin);
     const sy = innerH / Math.max(1, hist.yMax);
-    const pts: Array<readonly [number, number]> = [];
-    pts.push([PAD_X, PAD_Y + innerH]);
-    for (let i = 0; i < hist.xs.length; i += 1) {
-      const x = PAD_X + (hist.xs[i]! - hist.xMin) * sx;
-      const y = PAD_Y + innerH - hist.ys[i]! * sy;
-      pts.push([x, y]);
-    }
-    pts.push([PAD_X + innerW, PAD_Y + innerH]);
     const baselineY = PAD_Y + innerH;
-    const curve = cubicSmooth(pts);
+    const curves = hist.counts.map((ys, gi) => {
+      const pts: Array<readonly [number, number]> = [];
+      pts.push([PAD_X, baselineY]);
+      for (let i = 0; i < hist.xs.length; i += 1) {
+        const x = PAD_X + (hist.xs[i]! - hist.xMin) * sx;
+        const y = baselineY - ys[i]! * sy;
+        pts.push([x, y]);
+      }
+      pts.push([PAD_X + innerW, baselineY]);
+      return {
+        d: cubicSmooth(pts),
+        color: resolved[gi]?.color ?? "currentColor",
+      };
+    });
     return {
-      curve,
+      curves,
       innerW,
       innerH,
       sx,
-      sy,
       baselineY,
       xMin: hist.xMin,
       xMax: hist.xMax,
-      yMax: hist.yMax,
     };
-  }, [hist, width, height]);
+  }, [hist, resolved, width, height]);
 
   const markerLines = useMemo(() => {
     if (!layout || markers.length === 0) return [];
@@ -135,7 +160,6 @@ export const DistributionChart = ({
     );
     if (inRange.length === 0) return [];
     const sorted = [...inRange].sort((a, b) => a.value - b.value);
-    // assign label side: leftmost label on left, rightmost on right; alternate if needed
     return sorted.map((m, idx) => {
       const x = PAD_X + (m.value - layout.xMin) * layout.sx;
       const side: "left" | "right" = idx < sorted.length / 2 ? "left" : "right";
@@ -165,13 +189,16 @@ export const DistributionChart = ({
               />
             </clipPath>
           </defs>
-          <path
-            d={layout.curve}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            clipPath={`url(#${clipId})`}
-          />
+          {layout.curves.map((c, i) => (
+            <path
+              key={i}
+              d={c.d}
+              fill="none"
+              stroke={c.color}
+              strokeWidth={1.5}
+              clipPath={`url(#${clipId})`}
+            />
+          ))}
           {markerLines.map((m, i) => (
             <g key={i}>
               <line
@@ -192,6 +219,31 @@ export const DistributionChart = ({
                 fill="currentColor"
               >
                 {`${m.label} ${formatTick(m.value)}`}
+              </text>
+            </g>
+          ))}
+          {legend?.map((e, i) => (
+            <g
+              key={i}
+              transform={`translate(${PAD_X + 4} ${PAD_Y + 4 + i * 13})`}
+            >
+              <line
+                x1={0}
+                x2={14}
+                y1={0}
+                y2={0}
+                stroke={e.color}
+                strokeWidth={3}
+              />
+              <text
+                x={19}
+                y={0}
+                fontSize={10}
+                fontWeight={700}
+                fill="currentColor"
+                dominantBaseline="middle"
+              >
+                {e.label}
               </text>
             </g>
           ))}
