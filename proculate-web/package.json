@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --hot ./server.ts",
     "build:wasm": "cd ../proculate-wasm && wasm-pack build --target web --out-dir pkg",
-    "build": "bun build ./src/main.tsx --outdir ./dist --target browser",
+    "build": "bun ./build.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && biome check src",
     "lint:fix": "eslint . --fix && biome check src --write",

@@ -35,7 +35,7 @@ const makeEquations = (): ReadonlyArray<EquationState> =>
 
 const initialInput: MultiDInputState = {
   equations: makeEquations(),
-  scheme: "euler-maruyama",
+  scheme: "sri2",
   t0: 0,
   tEnd: 1,
   dt: 0.01,

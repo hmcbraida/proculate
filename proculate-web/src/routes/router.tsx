@@ -42,7 +42,7 @@ const routeTree = rootRoute.addChildren([
   multiDSdeRoute,
 ]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({ routeTree, basepath: "/proculate/" });
 
 declare module "@tanstack/react-router" {
   interface Register {

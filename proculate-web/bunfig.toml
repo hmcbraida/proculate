@@ -1,2 +1,5 @@
+[serve]
+publicPath = "/proculate"
+
 [serve.static]
 plugins = ["bun-plugin-tailwind"]
