@@ -10,7 +10,7 @@
 //! The Brownian increments `dW` are passed in by the driver; any *additional*
 //! Gaussian variates a scheme needs to approximate iterated stochastic
 //! integrals (`I_{(1,0)}` for SRI/SRA) are sampled by the scheme itself from
-//! an internal RNG. That keeps the noise abstraction clean — the noise
+//! an internal RNG. That keeps the noise abstraction clean -- the noise
 //! source produces only the physical driving process, and scheme-specific
 //! scratch randomness stays inside the scheme.
 
@@ -164,6 +164,7 @@ fn sample_i10(rng: &mut Pcg64, standard: &Normal<f64>, dw: &[f64], dt: f64) -> V
 // SRA driver
 // ---------------------------------------------------------------------------
 
+#[allow(clippy::needless_range_loop)]
 fn sra_step(
     tab: &SraTableau,
     equations: &[Equation<'_>],

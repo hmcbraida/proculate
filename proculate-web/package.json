@@ -9,7 +9,8 @@
     "build": "bun build ./src/main.tsx --outdir ./dist --target browser",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && biome check src",
-    "lint:fix": "eslint . --fix && biome check src --write"
+    "lint:fix": "eslint . --fix && biome check src --write",
+    "format": "biome format --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",

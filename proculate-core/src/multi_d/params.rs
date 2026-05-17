@@ -1,5 +1,7 @@
 //! Parameters, equations, and outputs for multi-dimensional SDE solvers.
 
+type MultiDimensionalFactor<'a> = dyn Fn(&[f64], f64) -> f64 + 'a;
+
 /// A single scalar equation `dS_i = mu_i(S, t) dt + sigma_i(S, t) dW_{k_i}`.
 ///
 /// `mu` and `sigma` receive the full state vector `S` so components can be
@@ -7,8 +9,8 @@
 /// independent Wiener processes drives this equation; equations that share
 /// an index share their Brownian path (perfect correlation).
 pub struct Equation<'a> {
-    pub mu: Box<dyn Fn(&[f64], f64) -> f64 + 'a>,
-    pub sigma: Box<dyn Fn(&[f64], f64) -> f64 + 'a>,
+    pub mu: Box<MultiDimensionalFactor<'a>>,
+    pub sigma: Box<MultiDimensionalFactor<'a>>,
     pub noise_index: usize,
 }
 

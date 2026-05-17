@@ -230,8 +230,8 @@ macro_rules! solve_multi {
 
 solve_multi!(solve_sde_multi_euler_maruyama, |_| EulerMaruyama);
 solve_multi!(solve_sde_multi_milstein, |_| Milstein);
-solve_multi!(solve_sde_multi_sra1, |s| Sra1::new(s));
-solve_multi!(solve_sde_multi_sra2, |s| Sra2::new(s));
-solve_multi!(solve_sde_multi_sri1, |s| Sri1::new(s));
-solve_multi!(solve_sde_multi_sri2, |s| Sri2::new(s));
-solve_multi!(solve_sde_multi_sriw1, |s| Sriw1::new(s));
+solve_multi!(solve_sde_multi_sra1, Sra1::new);
+solve_multi!(solve_sde_multi_sra2, Sra2::new);
+solve_multi!(solve_sde_multi_sri1, Sri1::new);
+solve_multi!(solve_sde_multi_sri2, Sri2::new);
+solve_multi!(solve_sde_multi_sriw1, Sriw1::new);
